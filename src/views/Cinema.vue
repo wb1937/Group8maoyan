@@ -13,17 +13,16 @@
         <!-- 所有区域显示与隐藏，只有显示时添加高亮 -->
         <!--  -->
         <div @click="isAreaShow=!isAreaShow" :class="isAreaShow?'active':''" >全城</div>
-        <div>品牌</div>
-        <div>特色</div>
+        <div @click="isBrandShow=!isBrandShow">品牌</div>
+        <div @click="isSpecialShow=!isSpecialShow">特色</div>
     </div>
 
+    <!-- 区域卡 -->
     <div class="area" v-show="isAreaShow">
-      <van-tabs v-model="activeName" >
+      <van-tabs v-model="activeName">
         <van-tab title="商区" name="商区">
          <ul>
-            <li>1111111111</li>
-            <li>3333333</li>
-            <li>44444</li>
+            <li v-for="(data,index) in dataList" :key="index">{{data.text}}({{data.info}})</li>
           </ul>
         </van-tab>
         <van-tab title="地铁站" name="地铁站">
@@ -33,14 +32,17 @@
             <li>6666</li>
           </ul>
         </van-tab>
-        <van-tab title="地铁站1" name="地铁站1">
-          <ul>
-            <li>444</li>
-            <li>555</li>
-            <li>6666</li>
-          </ul>
-        </van-tab>
       </van-tabs>
+    </div>
+
+    <!-- 品牌卡 -->
+    <div class="brand" v-show="isBrandShow">
+
+    </div>
+
+    <!-- 特色卡 -->
+    <div class="special" v-show="isSpecialShow">
+
     </div>
 
     <div class="content">
@@ -65,6 +67,8 @@ export default {
   data(){
     return {
         isAreaShow:false,
+        isBrandShow:false,
+        isSpecialShow:false,
         cinemaList:[],
         activeName:"商区",
     }
@@ -76,35 +80,33 @@ export default {
     handleClick(){
       this.$router.push('/search')
     },
-    // onClick(name, title) {
-    //   Toast(title);
-    //   if(title === "商区"){
-    //       var newarr= this.cinemaList.map(item => item.addr).slice(0,4)
-
-    //       var areaList = ["全部",...Array.from(new Set(newarr))]
-    //       var dataList = [];
-    //       for(var i=0;i<areaList.length;i++){
-    //         var num =  newarr.filter(item=>item.includes(areaList[i])).length
-    //         dataList.push({
-    //           text:areaList[i],
-    //           info:num
-    //         })
-    //       }
-    //       this.items = dataList
-    //   }else{
-
-    //   }
-    // },
   },
   computed:{
-
+      dataList(){
+          var newarr= this.cinemaList.map(item => item.addr.slice(0,3))
+          // console.log(newarr)
+          //所有区
+          var areaList = ["全部",...Array.from(new Set(newarr))]
+          var dataList = [];
+          var sum = 0;
+          for(var i=0;i<areaList.length;i++){
+            var num =  newarr.filter(item=>item.includes(areaList[i])).length
+            sum += num
+            dataList.push({
+              text:areaList[i],
+              info:num
+            })
+          }
+          dataList[0].info = sum
+          // console.log(dataList)
+          return dataList
+      }
   },
   mounted(){
-      axios.get("json/cinemas.json").then(res=>{
-          // console.log(res.data)
-          this.cinemaList = res.data.cinemas
-          console.log(this.cinemaList)
-      })
+         axios.get("json/cinemas.json").then(res=>{
+        // console.log(res.data)
+        this.cinemaList = res.data.cinemas
+        })
   }
 }
 </script>
@@ -167,12 +169,26 @@ export default {
 
     .area{
       display: flex;
-      justify-content: space-around;
+      // justify-content: space-around;
       position:fixed;
       top:130px;
       left:0px;
       width: 100%;
       background: white;
       z-index: 10;
+      .van-tabs{
+        width:100%;
+      }
+      ul{
+        width:30%;
+        
+        overflow:hidden;
+        li{
+          height:40px;
+          line-height:40px;
+          font-size:16px;
+          text-align:center;
+        }
+      }
     }
 </style>

@@ -7,7 +7,7 @@ const routes = [
   {
     path: '/cinema',
     component: ()=>import(/*webpackChunkName:'cinema'*/'@/views/Cinema') 
-  }
+  },
 ]
 
 const router = new VueRouter({
